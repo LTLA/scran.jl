@@ -13,7 +13,8 @@ message(STATUS "Found JlCxx at ${JlCxx_location}")
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(scrancxx SHARED testlib.cpp)
+add_library(scrancxx SHARED 
+    src/initialize_from_memory.cpp)
 
 add_subdirectory(extern)
 
