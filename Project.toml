@@ -1,0 +1,8 @@
+name = "scran"
+uuid = "849b0f54-433d-4938-ae73-f324fe568aef"
+authors = ["LTLA <infinite.monkeys.with.keyboards@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+CxxWrap = "1f15a43c-97ca-5a2a-ae31-89f07a497df4"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
