@@ -10,8 +10,21 @@
 struct ScranMatrix {
     ScranMatrix(tatami::NumericMatrix* p) : ptr(p) {}
 
-    void row(size_t r, jlcxx::ArrayRef<double> buffer) {
+    int nrow() const {
+        return ptr->nrow();
+    }
+
+    int ncol() const {
+        return ptr->ncol();
+    }
+
+    void row(size_t r, jlcxx::ArrayRef<double> buffer) const {
         ptr->row_copy(r, buffer.data());
+        return;
+    }
+
+    void column(size_t c, jlcxx::ArrayRef<double> buffer) const {
+        ptr->column_copy(c, buffer.data());
         return;
     }
 
@@ -20,6 +33,10 @@ struct ScranMatrix {
 
 template<class XVector, class IVector, class PVector>
 ScranMatrix create_matrix_copy_byrow(XVector x, IVector i, PVector p, int nrow, int ncol, bool byrow) {
+    for (auto& idx : i) {
+        --idx; // get back to 0-based.
+    }
+
     if (byrow) {
         typedef tatami::CompressedSparseMatrix<true, double, int, XVector, IVector, PVector> SparseMat;
         return ScranMatrix(new SparseMat(nrow, ncol, std::move(x), std::move(i), std::move(p), false));
@@ -57,21 +74,35 @@ ScranMatrix create_matrix_copy_x_type(const jlcxx::ArrayRef<DataType>& x, std::v
     }
 }
 
-template<typename DataType>
-ScranMatrix initialize_from_memory(jlcxx::ArrayRef<DataType> x, jlcxx::ArrayRef<int> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+template<typename DataType, class RowType>
+ScranMatrix create_matrix_no_copy(const jlcxx::ArrayRef<DataType>& x, std::vector<RowType> i, std::vector<size_t> p, int nrow, int ncol, bool byrow) {
+    tatami::ArrayView<DataType> x_(x.data(), x.size());
+    for (auto& idx : i) {
+        --idx; // get back to 0-based.
+    }
+
+    if (byrow) {
+        typedef tatami::CompressedSparseMatrix<true, double, int, decltype(x_), decltype(i), decltype(p)> SparseMat;
+        return ScranMatrix(new SparseMat(nrow, ncol, std::move(x_), std::move(i), std::move(p), false));
+    } else {
+        typedef tatami::CompressedSparseMatrix<false, double, int, decltype(x_), decltype(i), decltype(p)> SparseMat;
+        return ScranMatrix(new SparseMat(nrow, ncol, std::move(x_), std::move(i), std::move(p), false));
+    }
+}
+
+template<typename DataType, typename IndexType, typename PtrType>
+ScranMatrix initialize_from_memory(jlcxx::ArrayRef<DataType> x, jlcxx::ArrayRef<IndexType> i, jlcxx::ArrayRef<PtrType> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
     std::vector<size_t> p_(p.begin(), p.end());
+    for (auto& pidx : p_) {
+        --pidx; // get back to 0-based.
+    }
 
     // If no copy is requested, we hold onto the array views.
     if (no_copy) {
-        tatami::ArrayView<DataType> x_(x.data(), x.size());
-        tatami::ArrayView<int> i_(i.data(), i.size());
-
-        if (byrow) {
-            typedef tatami::CompressedSparseMatrix<true, double, int, decltype(x_), decltype(i_), decltype(p)> SparseMat;
-            return ScranMatrix(new SparseMat(nrow, ncol, std::move(x_), std::move(i_), std::move(p), false));
+        if (nrow <= std::numeric_limits<uint16_t>::max()) {
+            return create_matrix_no_copy(x, std::vector<uint16_t>(i.begin(), i.end()), std::move(p_), nrow, ncol, byrow);
         } else {
-            typedef tatami::CompressedSparseMatrix<false, double, int, decltype(x_), decltype(i_), decltype(p)> SparseMat;
-            return ScranMatrix(new SparseMat(nrow, ncol, std::move(x_), std::move(i_), std::move(p), false));
+            return create_matrix_no_copy(x, std::vector<int>(i.begin(), i.end()), std::move(p_), nrow, ncol, byrow);
         }
     }
 
@@ -85,20 +116,54 @@ ScranMatrix initialize_from_memory(jlcxx::ArrayRef<DataType> x, jlcxx::ArrayRef<
 
 /*** Defining concrete bindings. ***/
 
-ScranMatrix initialize_from_memory_integer(jlcxx::ArrayRef<int> x, jlcxx::ArrayRef<int> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+ScranMatrix initialize_from_memory_int32_int32(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int32_t> i, jlcxx::ArrayRef<int32_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
     return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
 }
 
-ScranMatrix initialize_from_memory_double(jlcxx::ArrayRef<double> x, jlcxx::ArrayRef<int> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+ScranMatrix initialize_from_memory_int64_int32(jlcxx::ArrayRef<int64_t> x, jlcxx::ArrayRef<int32_t> i, jlcxx::ArrayRef<int32_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_float32_int32(jlcxx::ArrayRef<float> x, jlcxx::ArrayRef<int32_t> i, jlcxx::ArrayRef<int32_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_float64_int32(jlcxx::ArrayRef<double> x, jlcxx::ArrayRef<int32_t> i, jlcxx::ArrayRef<int32_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_int32_int64(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_int64_int64(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_float32_int64(jlcxx::ArrayRef<float> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+    return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
+}
+
+ScranMatrix initialize_from_memory_float64_int64(jlcxx::ArrayRef<double> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
     return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
 }
 
 JLCXX_MODULE define_module_initialize_from_memory(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
-       .method("row", &ScranMatrix::row);
+       .method("row", &ScranMatrix::row)
+       .method("column", &ScranMatrix::column)
+       .method("num_rows", &ScranMatrix::nrow)
+       .method("num_columns", &ScranMatrix::ncol);
 
-    mod.method("initialize_from_memory_integer", &initialize_from_memory_integer);
-    mod.method("initialize_from_memory_double", &initialize_from_memory_double);
+    mod.method("initialize_from_memory_int32_int32", &initialize_from_memory_int32_int32);
+    mod.method("initialize_from_memory_int64_int32", &initialize_from_memory_int64_int32);
+    mod.method("initialize_from_memory_float32_int32", &initialize_from_memory_float32_int32);
+    mod.method("initialize_from_memory_float64_int32", &initialize_from_memory_float64_int32);
+
+    mod.method("initialize_from_memory_int32_int64", &initialize_from_memory_int32_int64);
+    mod.method("initialize_from_memory_int64_int64", &initialize_from_memory_int64_int64);
+    mod.method("initialize_from_memory_float32_int64", &initialize_from_memory_float32_int64);
+    mod.method("initialize_from_memory_float64_int64", &initialize_from_memory_float64_int64);
 }
 
 
