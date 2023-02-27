@@ -2,7 +2,7 @@
 module scran
 
 using CxxWrap
-@wrapmodule(joinpath(@__DIR__, "cpp/build/lib", "libscrancxx"), :define_module_initialize_from_memory)
+@wrapmodule(joinpath(@__DIR__, "cpp/build/lib", "libscrancxx"), :define_julia_module)
 
 function __init__()
     @initcxx
@@ -10,5 +10,8 @@ end
 
 include("initialize.jl")
 export initializesparsematrix, size, extractrow, extractcolumn
+
+include("lognormcounts.jl")
+export lognormcounts
 
 end

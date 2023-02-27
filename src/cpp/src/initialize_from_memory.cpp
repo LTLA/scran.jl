@@ -1,35 +1,11 @@
 #include "jlcxx/jlcxx.hpp"
 
-#include "tatami/tatami.hpp"
+#include "ScranMatrix.h"
 
 #include <vector>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
-
-struct ScranMatrix {
-    ScranMatrix(tatami::NumericMatrix* p) : ptr(p) {}
-
-    int nrow() const {
-        return ptr->nrow();
-    }
-
-    int ncol() const {
-        return ptr->ncol();
-    }
-
-    void row(size_t r, jlcxx::ArrayRef<double> buffer) const {
-        ptr->row_copy(r, buffer.data());
-        return;
-    }
-
-    void column(size_t c, jlcxx::ArrayRef<double> buffer) const {
-        ptr->column_copy(c, buffer.data());
-        return;
-    }
-
-    std::shared_ptr<tatami::NumericMatrix> ptr;
-};
 
 template<class XVector, class IVector, class PVector>
 ScranMatrix create_matrix_copy_byrow(XVector x, IVector i, PVector p, int nrow, int ncol, bool byrow) {
@@ -147,23 +123,3 @@ ScranMatrix initialize_from_memory_float32_int64(jlcxx::ArrayRef<float> x, jlcxx
 ScranMatrix initialize_from_memory_float64_int64(jlcxx::ArrayRef<double> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
     return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
 }
-
-JLCXX_MODULE define_module_initialize_from_memory(jlcxx::Module& mod) {
-    mod.add_type<ScranMatrix>("ScranMatrix")
-       .method("row", &ScranMatrix::row)
-       .method("column", &ScranMatrix::column)
-       .method("num_rows", &ScranMatrix::nrow)
-       .method("num_columns", &ScranMatrix::ncol);
-
-    mod.method("initialize_from_memory_int32_int32", &initialize_from_memory_int32_int32);
-    mod.method("initialize_from_memory_int64_int32", &initialize_from_memory_int64_int32);
-    mod.method("initialize_from_memory_float32_int32", &initialize_from_memory_float32_int32);
-    mod.method("initialize_from_memory_float64_int32", &initialize_from_memory_float64_int32);
-
-    mod.method("initialize_from_memory_int32_int64", &initialize_from_memory_int32_int64);
-    mod.method("initialize_from_memory_int64_int64", &initialize_from_memory_int64_int64);
-    mod.method("initialize_from_memory_float32_int64", &initialize_from_memory_float32_int64);
-    mod.method("initialize_from_memory_float64_int64", &initialize_from_memory_float64_int64);
-}
-
-
