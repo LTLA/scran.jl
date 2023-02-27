@@ -8,7 +8,7 @@ function transform_factor(f, n::Integer, msg::String)
     end
 
     counter = 0
-    levels = Dict{String, Int32}
+    levels = Dict{String, Int32}()
     ids = Vector{Int32}(undef, n)
 
     for i in eachindex(f)
@@ -17,13 +17,14 @@ function transform_factor(f, n::Integer, msg::String)
             ids[i] = levels[l]
         else
             levels[l] = counter
+            ids[i] = counter
             counter +=1
         end
     end
 
     olevels = Vector{String}(undef, length(levels))
     for (k, v) in levels
-        olevels[v] = k
+        olevels[v + 1] = k
     end
 
     return true, ids, olevels

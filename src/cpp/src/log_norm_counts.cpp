@@ -10,10 +10,10 @@
 
 ScranMatrix log_norm_counts(const ScranMatrix& x, 
     bool use_block, 
-    const jlcxx::ArrayRef<int32_t>& block_ids, 
+    jlcxx::ArrayRef<int32_t> block_ids, 
     std::string block_method,
     bool use_size_factors, 
-    const jlcxx::ArrayRef<double>& size_factors, 
+    jlcxx::ArrayRef<double> size_factors, 
     bool center, 
     bool allow_zeros,
     int nthreads)
