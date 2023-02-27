@@ -1,3 +1,5 @@
+include("utils.jl")
+
 """
     lognormcounts(x; 
         sizefactors = nothing, 
@@ -15,7 +17,7 @@ It returns a new `ScranMatrix` containing the log-normalized matrix.
 This should contain non-negative size factors to be applied to each cell in `x`.
 If not provided, the size factor for each cell is derived from its library size.
 
-`block` should be a vector of integers of length equal to the number of columns of `x`.
+`block` should be a vector of length equal to the number of columns of `x`.
 This should specify the block assignment for each cell.
 If not provided, all cells are assumed to belong to the same block.
 
@@ -66,19 +68,7 @@ function lognormcounts(x; sizefactors = nothing, block = nothing, blockmethod = 
         end
     end
 
-    use_block = false
-    if isnothing(block)
-        block = Vector{Int32}()
-    else
-        if length(block) != NC
-            throw(ErrorException("length of 'block' vector should be equal to number of columns in 'x'"))
-        end
+    use_block, block_ids, _ = transform_factor(block, NC, "length of 'block' vector should be equal to number of columns in 'x'")
 
-        use_block = true
-        if !(block isa Vector{Int32})
-            block = Int32.(block)
-        end
-    end
-
-    return log_norm_counts(x, use_block, block, blockmethod, use_sf, sizefactors, center, allowzeros, numthreads)
+    return log_norm_counts(x, use_block, block_ids, blockmethod, use_sf, sizefactors, center, allowzeros, numthreads)
 end
