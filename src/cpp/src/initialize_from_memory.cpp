@@ -112,7 +112,7 @@ ScranMatrix initialize_from_memory_int32_int64(jlcxx::ArrayRef<int32_t> x, jlcxx
     return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
 }
 
-ScranMatrix initialize_from_memory_int64_int64(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
+ScranMatrix initialize_from_memory_int64_int64(jlcxx::ArrayRef<int64_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced) {
     return initialize_from_memory(std::move(x), std::move(i), std::move(p), nrow, ncol, no_copy, byrow, forced);
 }
 

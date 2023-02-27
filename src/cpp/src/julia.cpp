@@ -12,7 +12,7 @@ ScranMatrix initialize_from_memory_float64_int32(jlcxx::ArrayRef<double> x, jlcx
 
 ScranMatrix initialize_from_memory_int32_int64(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced);
 
-ScranMatrix initialize_from_memory_int64_int64(jlcxx::ArrayRef<int32_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced);
+ScranMatrix initialize_from_memory_int64_int64(jlcxx::ArrayRef<int64_t> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced);
 
 ScranMatrix initialize_from_memory_float32_int64(jlcxx::ArrayRef<float> x, jlcxx::ArrayRef<int64_t> i, jlcxx::ArrayRef<int64_t> p, int nrow, int ncol, bool no_copy, bool byrow, bool forced);
 

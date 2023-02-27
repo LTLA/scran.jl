@@ -1,7 +1,7 @@
 include("utils.jl")
 
 """
-    lognormcounts(x; 
+    lognormcounts(x::ScranMatrix; 
         sizefactors = nothing, 
         block = nothing, 
         blockmethod = "lowest",
@@ -40,7 +40,7 @@ This is only used when `sizefactors` is not supplied and we compute the library 
 
 julia> using SparseArrays
 
-julia> x = abs.(sprand(Int32, 20, 10, 0.2))
+julia> x = abs.(sprand(Int32, 50, 10, 0.2))
 
 julia> using scran
 
@@ -51,7 +51,7 @@ julia> normed = scran.lognormcounts(mat)
 julia> extractcolumn(normed, 1)
 ```
 """
-function lognormcounts(x; sizefactors = nothing, block = nothing, blockmethod = "lowest", center = true, allowzeros = false, numthreads = 1)
+function lognormcounts(x::ScranMatrix; sizefactors = nothing, block = nothing, blockmethod = "lowest", center = true, allowzeros = false, numthreads = 1)
     NC = size(x)[1]
 
     use_sf = false;

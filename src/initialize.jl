@@ -17,11 +17,11 @@ This is set to `true` for typical applications involving count matrices.
 
 julia> using SparseArrays
 
-julia> x = sprand(Int32, 8, 12, 0.2)
+julia> x = abs.(sprand(Int32, 8, 12, 0.2))
 
 julia> using scran
 
-julia> mat = scran.initializesparsematrix(sparsemat)
+julia> mat = scran.initializesparsematrix(x)
 
 julia> mat isa scran.ScranMatrix
 true
@@ -62,7 +62,7 @@ Get the dimensions of a `ScranMatrix`, returning a 2-tuple containing the rows a
 
 julia> using SparseArrays
 
-julia> x = sprand(Int64, 8, 12, 0.2)
+julia> x = abs.(sprand(Int64, 8, 12, 0.2))
 
 julia> using scran
 
@@ -77,7 +77,7 @@ function Base.size(x::ScranMatrix)
 end
 
 """
-    extractrow(x, r)
+    extractrow(x::ScranMatrix, r::Integer)
 
 Extract the values of the row `r` from the `ScranMatrix` `x`, returning a vector of double-precision floats of length equal to the number of columns.
 This is mostly intended for use in testing; looping over this and calling a function on each row will be rather inefficient. 
@@ -87,7 +87,7 @@ This is mostly intended for use in testing; looping over this and calling a func
 
 julia> using SparseArrays
 
-julia> x = sprand(Float64, 8, 12, 0.2) .* 10
+julia> x = abs.(sprand(Float64, 8, 12, 0.2) .* 10)
 
 julia> using scran
 
@@ -103,7 +103,7 @@ function extractrow(x::ScranMatrix, r::Integer)
 end
 
 """
-    extractcolumn(x, c)
+    extractcolumn(x::ScranMatrix, c::Integer)
 
 Extract the values of the column `c` from the `ScranMatrix` `x`, returning a vector of double-precision floats of length equal to the number of rows.
 This is mostly intended for use in testing; looping over this and calling a function on each column will be rather inefficient. 
@@ -113,7 +113,7 @@ This is mostly intended for use in testing; looping over this and calling a func
 
 julia> using SparseArrays
 
-julia> x = sprand(Float64, 8, 12, 0.2) .* 10
+julia> x = abs.(sprand(Float64, 8, 12, 0.2) .* 10)
 
 julia> using scran
 
