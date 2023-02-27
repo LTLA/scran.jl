@@ -53,9 +53,10 @@ function initializesparsematrix(x::SparseMatrixCSC{Tv, Ti}; nocopy = false, forc
 end
 
 """
-    size(x)
+    size(x::ScranMatrix, [dim])
 
 Get the dimensions of a `ScranMatrix`, returning a 2-tuple containing the rows and columns.
+If `dim` is supplied, it should be an integer specifying whether to return the number of rows (1) or columns (2).
 
 # Examples
 ```jldoctest
@@ -70,10 +71,21 @@ julia> mat = scran.initializesparsematrix(x)
 
 julia> size(mat)
 (8, 12)
+
+julia> size(mat, 2)
+12
 ```
 """
 function Base.size(x::ScranMatrix)
     return (num_rows(x), num_columns(x))
+end
+
+function Base.size(x::ScranMatrix, dim::Integer)
+    if dim == 1
+        return num_rows(x)
+    else
+        return num_columns(x)
+    end
 end
 
 """

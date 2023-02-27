@@ -52,7 +52,7 @@ julia> extractcolumn(normed, 1)
 ```
 """
 function lognormcounts(x::ScranMatrix; sizefactors = nothing, block = nothing, blockmethod = "lowest", center = true, allowzeros = false, numthreads = 1)
-    NC = size(x)[1]
+    NC = size(x, 2)
 
     use_sf = false;
     if isnothing(sizefactors)
