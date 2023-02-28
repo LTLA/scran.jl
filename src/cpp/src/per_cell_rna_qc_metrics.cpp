@@ -21,7 +21,7 @@ void per_cell_rna_qc_metrics(const ScranMatrix& x,
         subptrs.push_back(reinterpret_cast<uint8_t*>(jl_array_data(arr)));
     }
 
-    scran::PerCellRnaQcMetrics::Buffers buffer;
+    scran::PerCellRnaQcMetrics::Buffers<double, int32_t> buffer;
     buffer.sums = sums.data();
     buffer.detected = detected.data();
     for (auto ptr : proportions) {
