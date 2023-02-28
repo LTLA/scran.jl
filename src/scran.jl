@@ -19,4 +19,7 @@ export lognormcounts
 include("percellrnaqcmetrics.jl")
 export percellrnaqcmetrics
 
+include("suggestrnaqcfilters.jl")
+export suggestrnaqcfilters
+
 end
