@@ -16,7 +16,7 @@ using scran
         thresholds_detected::Vector{Float64}, 
         thresholds_proportions::Dict{String,Vector{Float64}}
     )
-        output = zeros(UInt8, length(sums))
+        output = zeros(Bool, length(sums))
 
         for i in eachindex(sums)
             if sums[i] < thresholds_sums[1]
@@ -96,7 +96,7 @@ using scran
         @test suggested["thresholds"]["detected"][2] == ref_b["thresholds"]["detected"][1]
         @test suggested["thresholds"]["proportions"]["mito"][2] == ref_b["thresholds"]["proportions"]["mito"][1]
 
-        combined = zeros(UInt8, size(mat, 2))
+        combined = zeros(Bool, size(mat, 2))
         combined[slices["a"]] = ref_a["filter"]
         combined[slices["b"]] = ref_b["filter"]
         @test combined == suggested["filter"]

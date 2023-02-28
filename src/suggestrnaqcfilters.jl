@@ -81,7 +81,7 @@ function suggestrnaqcfilters(sums::Vector{Float64}, detected::Vector{Int32}, pro
             "detected" => copy(thresholds_detected(thresholds)),
             "proportions" => prop
         ),
-        "filter" => survivors
+        "filter" => Bool.(survivors)
     )
 
     if use_block
