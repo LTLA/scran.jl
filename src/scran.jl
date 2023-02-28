@@ -8,10 +8,15 @@ function __init__()
     @initcxx
 end
 
+include("utils.jl")
+
 include("initialize.jl")
 export initializesparsematrix, size, extractrow, extractcolumn
 
 include("lognormcounts.jl")
 export lognormcounts
+
+include("percellrnaqcmetrics.jl")
+export percellrnaqcmetrics
 
 end

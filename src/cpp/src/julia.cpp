@@ -28,6 +28,13 @@ ScranMatrix log_norm_counts(const ScranMatrix& x,
     bool allow_zeros,
     int nthreads);
 
+void per_cell_rna_qc_metrics(const ScranMatrix& x,
+    jlcxx::ArrayRef<jl_value_t*> subsets,
+    jlcxx::ArrayRef<double> sums,
+    jlcxx::ArrayRef<int32_t> detected,
+    jlcxx::ArrayRef<jl_value_t*> proportions,
+    int nthreads);
+
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
        .method("row", &ScranMatrix::row)
@@ -46,4 +53,6 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.method("initialize_from_memory_float64_int64", &initialize_from_memory_float64_int64);
 
     mod.method("log_norm_counts", &log_norm_counts);
+
+    mod.method("per_cell_rna_qc_metrics", &per_cell_rna_qc_metrics);
 }
