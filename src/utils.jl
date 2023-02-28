@@ -39,7 +39,7 @@ end
 
 function cast_to_logical(v::Vector{T}, NR::Integer) where T <: Integer
     output = zeros(UInt8, NR)
-    for i in eachindex(v)
+    for i in v
         if i <= 0 || i > NR
             throw(ErrorException("subsetting indices are out of range of the dimension extent"))
         end
