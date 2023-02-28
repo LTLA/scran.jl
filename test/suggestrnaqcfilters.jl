@@ -96,7 +96,7 @@ using scran
         @test suggested["thresholds"]["detected"][2] == ref_b["thresholds"]["detected"][1]
         @test suggested["thresholds"]["proportions"]["mito"][2] == ref_b["thresholds"]["proportions"]["mito"][1]
 
-        combined = zeros(UInt8, length(sums))
+        combined = zeros(UInt8, size(mat, 2))
         combined[slices["a"]] = ref_a["filter"]
         combined[slices["b"]] = ref_b["filter"]
         @test combined == suggested["filter"]
