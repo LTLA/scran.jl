@@ -30,3 +30,20 @@ function transform_factor(f, n::Integer, msg::String)
     return true, ids, olevels
 end
 
+function cast_to_logical(v::Vector{T}, NR::Integer) where T <: Bool
+    if length(v) != NR
+        throw(ErrorException("subsetting vector is longer than the dimension extent"))
+    end
+    return UInt8.(v)
+end
+
+function cast_to_logical(v::Vector{T}, NR::Integer) where T <: Integer
+    output = zeros(UInt8, NR)
+    for i in v
+        if i <= 0 || i > NR
+            throw(ErrorException("subsetting indices are out of range of the dimension extent"))
+        end
+        output[i] = 1
+    end
+    return output
+end

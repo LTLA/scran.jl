@@ -16,7 +16,9 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(scrancxx SHARED 
     src/julia.cpp
     src/initialize_from_memory.cpp
-    src/log_norm_counts.cpp)
+    src/log_norm_counts.cpp
+    src/per_cell_rna_qc_metrics.cpp
+    src/suggest_rna_qc_filters.cpp)
 
 add_subdirectory(extern)
 

@@ -4,4 +4,6 @@ using scran, Documenter
 #doctest(scran)
 include("initializesparsematrix.jl")
 include("lognormcounts.jl")
+include("percellrnaqcmetrics.jl")
+include("suggestrnaqcfilters.jl")
 end
