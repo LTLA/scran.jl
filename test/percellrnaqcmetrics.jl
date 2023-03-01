@@ -13,7 +13,7 @@ using scran
         detected = sum(x .> 0, dims=1)[1,:]
         @test detected == metrics["detected"]
 
-        @test length(metrics["proportions"]) == 0
+        @test length(metrics["subsetproportions"]) == 0
     end
 
     @testset "some subsets" begin
@@ -25,11 +25,11 @@ using scran
 
         subsets = Dict{String,Any}("SUB1" => sub1, "SUB2" => sub2)
         metrics = scran.percellrnaqcmetrics(mat; subsets = subsets)
-        @test length(metrics["proportions"]) == 2
+        @test length(metrics["subsetproportions"]) == 2
 
         totals1 = sum(x[sub1,:], dims=1)[1,:]
         totals2 = sum(x[sub2,:], dims=1)[1,:]
-        @test isapprox(metrics["proportions"]["SUB1"], totals1 ./ colsums)
-        @test isapprox(metrics["proportions"]["SUB2"], totals2 ./ colsums)
+        @test isapprox(metrics["subsetproportions"]["SUB1"], totals1 ./ colsums)
+        @test isapprox(metrics["subsetproportions"]["SUB2"], totals2 ./ colsums)
     end
 end

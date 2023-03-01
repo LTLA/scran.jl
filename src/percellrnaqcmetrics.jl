@@ -6,8 +6,8 @@ This returns a dictionary containing:
 
 - `sums`, a vector of doubles containing the sum of counts within each cell.
 - `detected`, a vector of integers containing the number of detected (i.e., non-zero) counts in each cell.
-- `proportions`, an inner dictionary where each key is the name of a feature subset.
-   Each value is a vector of doubles containing the proportion of counts in the subset.
+- `subsetproportions`, an inner dictionary where each key is the name of a feature subset.
+  Each value is a vector of doubles containing the proportion of counts in the subset.
 
 If `subsets` is provided, it should be a dictionary where each key is a string containing the name of a feature subset.
 If the value is a vector of booleans, it should be of length equal to the number of rows in `x`, where truthy values represent membership of the corresponding row in the subset.
@@ -57,7 +57,7 @@ function percellrnaqcmetrics(x::ScranMatrix; subsets = nothing, numthreads = 1)
     for i in eachindex(subnames)
         subdict[subnames[i]] = subout[i]
     end
-    output["proportions"] = subdict
+    output["subsetproportions"] = subdict
 
     return output
 end

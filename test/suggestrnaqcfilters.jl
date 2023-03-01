@@ -47,20 +47,20 @@ using scran
 
         @test suggested["thresholds"]["sums"][1] > 0
         @test suggested["thresholds"]["detected"][1] > 0
-        @test length(suggested["thresholds"]["proportions"]) == 0
+        @test length(suggested["thresholds"]["subsetproportions"]) == 0
 
-        ref = reference_filter(metrics["sums"], metrics["detected"], proportions, suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["proportions"])
+        ref = reference_filter(metrics["sums"], metrics["detected"], proportions, suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["subsetproportions"])
         @test ref == suggested["filter"]
     end
 
     @testset "some subsets, no blocks" begin
-        suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], metrics["proportions"])
+        suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], metrics["subsetproportions"])
 
         @test suggested["thresholds"]["sums"][1] > 0
         @test suggested["thresholds"]["detected"][1] > 0
-        @test length(suggested["thresholds"]["proportions"]) == length(subsets)
+        @test length(suggested["thresholds"]["subsetproportions"]) == length(subsets)
 
-        ref = reference_filter(metrics["sums"], metrics["detected"], metrics["proportions"], suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["proportions"])
+        ref = reference_filter(metrics["sums"], metrics["detected"], metrics["subsetproportions"], suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["subsetproportions"])
         @test ref == suggested["filter"]
     end
 
@@ -73,15 +73,15 @@ using scran
             push!(slices[chosen], i)
         end
 
-        suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], metrics["proportions"]; block = block)
+        suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], metrics["subsetproportions"]; block = block)
         @test length(suggested["thresholds"]["sums"]) == 2
         @test length(suggested["thresholds"]["detected"]) == 2
-        @test length(suggested["thresholds"]["proportions"]) == length(subsets)
+        @test length(suggested["thresholds"]["subsetproportions"]) == length(subsets)
         @test suggested["block_levels"] == Vector{String}(["a", "b"])
 
         prop_a = Dict{String, Vector{Float64}}()
         prop_b = Dict{String, Vector{Float64}}()
-        for (k, v) in metrics["proportions"]
+        for (k, v) in metrics["subsetproportions"]
             prop_a[k] = v[slices["a"]]
             prop_b[k] = v[slices["b"]]
         end
@@ -89,12 +89,12 @@ using scran
         ref_a = scran.suggestrnaqcfilters(metrics["sums"][slices["a"]], metrics["detected"][slices["a"]], prop_a)
         @test suggested["thresholds"]["sums"][1] == ref_a["thresholds"]["sums"][1]
         @test suggested["thresholds"]["detected"][1] == ref_a["thresholds"]["detected"][1]
-        @test suggested["thresholds"]["proportions"]["mito"][1] == ref_a["thresholds"]["proportions"]["mito"][1]
+        @test suggested["thresholds"]["subsetproportions"]["mito"][1] == ref_a["thresholds"]["subsetproportions"]["mito"][1]
 
         ref_b = scran.suggestrnaqcfilters(metrics["sums"][slices["b"]], metrics["detected"][slices["b"]], prop_b)
         @test suggested["thresholds"]["sums"][2] == ref_b["thresholds"]["sums"][1]
         @test suggested["thresholds"]["detected"][2] == ref_b["thresholds"]["detected"][1]
-        @test suggested["thresholds"]["proportions"]["mito"][2] == ref_b["thresholds"]["proportions"]["mito"][1]
+        @test suggested["thresholds"]["subsetproportions"]["mito"][2] == ref_b["thresholds"]["subsetproportions"]["mito"][1]
 
         combined = zeros(Bool, size(mat, 2))
         combined[slices["a"]] = ref_a["filter"]
