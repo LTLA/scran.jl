@@ -1,5 +1,5 @@
-#ifndef SUGGEST_RNA_QC_FILTERS_H
-#define SUGGEST_RNA_QC_FILTERS_H
+#ifndef SCRANJL_SUGGEST_RNA_QC_FILTERS_H
+#define SCRANJL_SUGGEST_RNA_QC_FILTERS_H
 
 #include "jlcxx/jlcxx.hpp"
 #include "scran/scran.hpp"
