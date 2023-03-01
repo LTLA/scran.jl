@@ -1,33 +1,33 @@
-function transform_factor(f, n::Integer, msg::String)
+function transform_factor(f::Nothing, n::Integer, msg::String)
     if isnothing(f)
         return false, Vector{Int32}(), Vector{String}()
     end
+end
 
+function transform_factor(f::Vector{T}, n::Integer, msg::String) where T
     if length(f) != n
         throw(ErrorException(msg))
     end
 
-    counter = 0
-    levels = Dict{String, Int32}()
+    keys = unique(f)
+    sort!(keys)
+
+    # Short cut if it's already properly formatted.
+    if T == Int32 && length(keys) && keys[1] == 0 && keys[length(keys)] == length(keys) - 1
+        return f
+    end
+
+    levels = Dict{T, Int32}()
+    for i in eachindex(keys)
+        levels[keys[i]] = i - 1 # Get to 0-based indices
+    end
+
     ids = Vector{Int32}(undef, n)
-
     for i in eachindex(f)
-        l = string(f[i])
-        if haskey(levels, l)
-            ids[i] = levels[l]
-        else
-            levels[l] = counter
-            ids[i] = counter
-            counter +=1
-        end
+        ids[i] = levels[f[i]]
     end
 
-    olevels = Vector{String}(undef, length(levels))
-    for (k, v) in levels
-        olevels[v + 1] = k
-    end
-
-    return true, ids, olevels
+    return true, ids, keys
 end
 
 function cast_to_logical(v::Vector{T}, NR::Integer) where T <: Bool
