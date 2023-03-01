@@ -6,4 +6,6 @@ include("initializesparsematrix.jl")
 include("lognormcounts.jl")
 include("percellrnaqcmetrics.jl")
 include("suggestrnaqcfilters.jl")
+include("percelladtqcmetrics.jl")
+include("suggestadtqcfilters.jl")
 end

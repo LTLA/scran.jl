@@ -22,4 +22,10 @@ export percellrnaqcmetrics
 include("suggestrnaqcfilters.jl")
 export suggestrnaqcfilters
 
+include("percelladtqcmetrics.jl")
+export percelladtqcmetrics
+
+include("suggestadtqcfilters.jl")
+export suggestadtqcfilters
+
 end
