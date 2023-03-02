@@ -7,6 +7,8 @@
 #include "suggest_rna_qc_filters.hpp"
 #include "per_cell_adt_qc_metrics.hpp"
 #include "suggest_adt_qc_filters.hpp"
+#include "per_cell_crispr_qc_metrics.hpp"
+#include "suggest_crispr_qc_filters.hpp"
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -23,6 +25,9 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<SuggestAdtQcFiltersResults>("SuggestAdtQcFiltersResults")
        .method("thresholds_detected", &SuggestAdtQcFiltersResults::thresholds_detected)
        .method("thresholds_totals", &SuggestAdtQcFiltersResults::thresholds_totals);
+
+    mod.add_type<SuggestCrisprQcFiltersResults>("SuggestCrisprQcFiltersResults")
+       .method("thresholds_max_count", &SuggestCrisprQcFiltersResults::thresholds_max_count);
 
     // initialize_from_memory.hpp
     mod.method("initialize_from_memory_int32_int32", &initialize_from_memory_int32_int32);
@@ -49,4 +54,10 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     // suggest_adt_qc_filters.hpp
     mod.method("suggest_adt_qc_filters", &suggest_adt_qc_filters);
+
+    // per_cell_crispr_qc_metrics.hpp
+    mod.method("per_cell_crispr_qc_metrics", &per_cell_crispr_qc_metrics);
+
+    // suggest_crispr_qc_filters.hpp
+    mod.method("suggest_crispr_qc_filters", &suggest_crispr_qc_filters);
 }

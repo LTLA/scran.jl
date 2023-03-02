@@ -28,4 +28,10 @@ export percelladtqcmetrics
 include("suggestadtqcfilters.jl")
 export suggestadtqcfilters
 
+include("percellcrisprqcmetrics.jl")
+export percellcrisprqcmetrics
+
+include("suggestcrisprqcfilters.jl")
+export suggestcrisprqcfilters
+
 end

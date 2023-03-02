@@ -8,4 +8,6 @@ include("percellrnaqcmetrics.jl")
 include("suggestrnaqcfilters.jl")
 include("percelladtqcmetrics.jl")
 include("suggestadtqcfilters.jl")
+include("percellcrisprqcmetrics.jl")
+include("suggestcrisprqcfilters.jl")
 end
