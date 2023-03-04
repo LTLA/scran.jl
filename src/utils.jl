@@ -47,3 +47,16 @@ function cast_to_logical(v::Vector{T}, NR::Integer) where T <: Integer
     end
     return output
 end
+
+function transform_blocked_thresholds(thresholds::Vector{Float64}, use_block::Bool, block_levels::Vector{T}) where T
+    if !use_block
+        return thresholds[1]
+    end
+
+    output = Dict{T, Float64}()
+    for i in eachindex(block_levels)
+        output[block_levels[i]] = thresholds[i]
+    end
+
+    return output
+end

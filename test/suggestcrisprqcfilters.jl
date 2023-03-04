@@ -10,10 +10,10 @@ using scran
     @testset "no blocks" begin
         suggested = scran.suggestcrisprqcfilters(metrics["sums"], metrics["maxproportion"])
 
-        @test suggested["thresholds"]["maxcount"][1] > 0
+        @test suggested["thresholds"]["maxcount"] > 0
 
         maxcounts = metrics["sums"] .* metrics["maxproportion"]
-        refabove = (maxcounts .< suggested["thresholds"]["maxcount"][1]) 
+        refabove = (maxcounts .< suggested["thresholds"]["maxcount"]) 
         @test refabove == suggested["filter"]
     end
 
@@ -28,13 +28,12 @@ using scran
 
         suggested = scran.suggestcrisprqcfilters(metrics["sums"], metrics["maxproportion"]; block = block)
         @test length(suggested["thresholds"]["maxcount"]) == 2
-        @test suggested["block_levels"] == Vector{String}(["a", "b"])
 
         ref_a = scran.suggestcrisprqcfilters(metrics["sums"][slices["a"]], metrics["maxproportion"][slices["a"]])
-        @test suggested["thresholds"]["maxcount"][1] == ref_a["thresholds"]["maxcount"][1]
+        @test suggested["thresholds"]["maxcount"]["a"] == ref_a["thresholds"]["maxcount"]
 
         ref_b = scran.suggestcrisprqcfilters(metrics["sums"][slices["b"]], metrics["maxproportion"][slices["b"]])
-        @test suggested["thresholds"]["maxcount"][2] == ref_b["thresholds"]["maxcount"][1]
+        @test suggested["thresholds"]["maxcount"]["b"] == ref_b["thresholds"]["maxcount"]
 
         combined = zeros(Bool, size(mat, 2))
         combined[slices["a"]] = ref_a["filter"]

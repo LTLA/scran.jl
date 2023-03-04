@@ -18,19 +18,17 @@ All vectors should have length equal to the number of cells.
 This function then returns a dictionary containing the following keys:
 
 - `thresholds`: a dictionary containing:
-  - `sums`: a vector of doubles of length equal to the number of blocks, containing the filtering threshold applied to the sums.
-  - `detected`: a vector of doubles of length equal to the number of blocks, containing the filtering threshold applied to the detected number of genes.
-  - `subsetproportions`: a dictionary where each key is a feature subset name and each value is a vector of doubles of length equal to the number of blocks, 
-     containing the filtering threshold applied to the subset proportion.
+  - `sums`: the filtering threshold applied to the sums.
+  - `detected`: the filtering threshold applied to the detected number of genes.
+  - `subsetproportions`: a dictionary where each key is a feature subset name and each value is the filtering threshold applied to that subset's proportion.
 - `filter`: a vector of booleans where a truthy value indicates that the corresponding cell failed to pass at least one of the thresholds.
   Such cells are deemed to be of low-quality and should be discarded.
-- `block_levels`: a vector of block levels, to assist interpretation of the `thresholds`.
-  Only generated if `block` is supplied.
 
 `block` should be a vector of length equal to the number of columns of `x`.
 This should specify the block assignment for each cell.
 Filtering thresholds are computed within each block, which avoids inflated MADs when there are large block-to-block differences.
-If not provided, all cells are assumed to belong to the same block.
+If `block` is provided, all thresholds are instead dictionaries where each key is the block name and each value is the filtering threshold in that block.
+If `block` is not provided, all cells are assumed to belong to the same block.
 
 The number of MADs used to define the outlier thresholds is defined by `nummads`.
 Larger values yield more relaxed filters.
@@ -75,23 +73,19 @@ function suggestrnaqcfilters(sums::Vector{Float64}, detected::Vector{Int32}, sub
     survivors = Vector{UInt8}(undef, ncells)
     thresholds = suggest_rna_qc_filters(sums, detected, props, use_block, block_ids, survivors, nummads)
 
-    prop = Dict{String, Vector{Float64}}()
+    prop = Dict{String, Any}()
     for i in eachindex(subnames)
-        prop[subnames[i]] = thresholds_proportions(thresholds, i - 1)
+        prop[subnames[i]] = transform_blocked_thresholds(thresholds_proportions(thresholds, i - 1), use_block, block_levels)
     end
 
     output = Dict{String, Any}(
         "thresholds" => Dict{String, Any}(
-            "sums" => copy(thresholds_sums(thresholds)),
-            "detected" => copy(thresholds_detected(thresholds)),
+            "sums" => transform_blocked_thresholds(thresholds_sums(thresholds), use_block, block_levels),
+            "detected" => transform_blocked_thresholds(thresholds_detected(thresholds), use_block, block_levels),
             "subsetproportions" => prop
         ),
         "filter" => Vector{Bool}(survivors)
     )
-
-    if use_block
-        output["block_levels"] = block_levels
-    end
 
     return output
 end

@@ -12,25 +12,25 @@ using scran
         sums::Vector{Float64}, 
         detected::Vector{Int32}, 
         proportions::Dict{String,Vector{Float64}},
-        thresholds_sums::Vector{Float64}, 
-        thresholds_detected::Vector{Float64}, 
-        thresholds_proportions::Dict{String,Vector{Float64}}
+        thresholds_sums::Float64, 
+        thresholds_detected::Float64, 
+        thresholds_proportions::Dict{String,Float64}
     )
         output = zeros(Bool, length(sums))
 
         for i in eachindex(sums)
-            if sums[i] < thresholds_sums[1]
+            if sums[i] < thresholds_sums
                 output[i] = 1
                 continue
             end
-            if detected[i] < thresholds_detected[1]
+            if detected[i] < thresholds_detected
                 output[i] = 1
                 continue
             end
         end
 
         for (k, v) in proportions
-            threshold = thresholds_proportions[k][1]
+            threshold = thresholds_proportions[k]
             for i in eachindex(v)
                 if v[i] > threshold
                     output[i] = 1
@@ -45,22 +45,36 @@ using scran
         proportions = Dict{String,Vector{Float64}}()
         suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], proportions)
 
-        @test suggested["thresholds"]["sums"][1] > 0
-        @test suggested["thresholds"]["detected"][1] > 0
+        @test suggested["thresholds"]["sums"] > 0
+        @test suggested["thresholds"]["detected"] > 0
         @test length(suggested["thresholds"]["subsetproportions"]) == 0
 
-        ref = reference_filter(metrics["sums"], metrics["detected"], proportions, suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["subsetproportions"])
+        ref = reference_filter(
+            metrics["sums"], 
+            metrics["detected"], 
+            proportions, 
+            suggested["thresholds"]["sums"], 
+            suggested["thresholds"]["detected"], 
+            Dict{String,Float64}()
+        )
         @test ref == suggested["filter"]
     end
 
     @testset "some subsets, no blocks" begin
         suggested = scran.suggestrnaqcfilters(metrics["sums"], metrics["detected"], metrics["subsetproportions"])
 
-        @test suggested["thresholds"]["sums"][1] > 0
-        @test suggested["thresholds"]["detected"][1] > 0
+        @test suggested["thresholds"]["sums"] > 0
+        @test suggested["thresholds"]["detected"] > 0
         @test length(suggested["thresholds"]["subsetproportions"]) == length(subsets)
 
-        ref = reference_filter(metrics["sums"], metrics["detected"], metrics["subsetproportions"], suggested["thresholds"]["sums"], suggested["thresholds"]["detected"], suggested["thresholds"]["subsetproportions"])
+        ref = reference_filter(
+            metrics["sums"], 
+            metrics["detected"], 
+            metrics["subsetproportions"], 
+            suggested["thresholds"]["sums"], 
+            suggested["thresholds"]["detected"], 
+            Dict{String,Float64}(suggested["thresholds"]["subsetproportions"])
+        )
         @test ref == suggested["filter"]
     end
 
@@ -77,7 +91,6 @@ using scran
         @test length(suggested["thresholds"]["sums"]) == 2
         @test length(suggested["thresholds"]["detected"]) == 2
         @test length(suggested["thresholds"]["subsetproportions"]) == length(subsets)
-        @test suggested["block_levels"] == Vector{String}(["a", "b"])
 
         prop_a = Dict{String, Vector{Float64}}()
         prop_b = Dict{String, Vector{Float64}}()
@@ -87,14 +100,14 @@ using scran
         end
 
         ref_a = scran.suggestrnaqcfilters(metrics["sums"][slices["a"]], metrics["detected"][slices["a"]], prop_a)
-        @test suggested["thresholds"]["sums"][1] == ref_a["thresholds"]["sums"][1]
-        @test suggested["thresholds"]["detected"][1] == ref_a["thresholds"]["detected"][1]
-        @test suggested["thresholds"]["subsetproportions"]["mito"][1] == ref_a["thresholds"]["subsetproportions"]["mito"][1]
+        @test suggested["thresholds"]["sums"]["a"] == ref_a["thresholds"]["sums"]
+        @test suggested["thresholds"]["detected"]["a"] == ref_a["thresholds"]["detected"]
+        @test suggested["thresholds"]["subsetproportions"]["mito"]["a"] == ref_a["thresholds"]["subsetproportions"]["mito"]
 
         ref_b = scran.suggestrnaqcfilters(metrics["sums"][slices["b"]], metrics["detected"][slices["b"]], prop_b)
-        @test suggested["thresholds"]["sums"][2] == ref_b["thresholds"]["sums"][1]
-        @test suggested["thresholds"]["detected"][2] == ref_b["thresholds"]["detected"][1]
-        @test suggested["thresholds"]["subsetproportions"]["mito"][2] == ref_b["thresholds"]["subsetproportions"]["mito"][1]
+        @test suggested["thresholds"]["sums"]["b"] == ref_b["thresholds"]["sums"]
+        @test suggested["thresholds"]["detected"]["b"] == ref_b["thresholds"]["detected"]
+        @test suggested["thresholds"]["subsetproportions"]["mito"]["b"] == ref_b["thresholds"]["subsetproportions"]["mito"]
 
         combined = zeros(Bool, size(mat, 2))
         combined[slices["a"]] = ref_a["filter"]

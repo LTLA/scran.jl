@@ -17,17 +17,15 @@ All vectors should have length equal to the number of cells.
 This function then returns a dictionary containing the following keys:
 
 - `thresholds`: a dictionary containing:
-  - `detected`: a vector of doubles of length equal to the number of blocks, containing the filtering threshold applied to the detected number of genes.
-  - `subsettotals`: a dictionary where each key is a subset name and each value is a vector of doubles of length equal to the number of blocks, 
-     containing the filtering threshold applied to the subset totals.
+  - `detected`: the filtering threshold applied to the detected number of genes.
+  - `subsettotals`: a dictionary where each key is a subset name and each value is the filtering threshold applied to the subset totals.
 - `filter`: a vector of booleans where a truthy value indicates that the corresponding cell failed to pass at least one of the thresholds.
   Such cells are deemed to be of low-quality and should be discarded.
-- `block_levels`: a vector of block levels, to assist interpretation of the `thresholds`.
-  Only generated if `block` is supplied.
 
 `block` should be a vector of length equal to the number of columns of `x`.
 This should specify the block assignment for each cell.
 Filtering thresholds are computed within each block, which avoids inflated MADs when there are large block-to-block differences.
+If `block` is provided, all thresholds are instead dictionaries where each key is the block name and each value is the filtering threshold in that block.
 If not provided, all cells are assumed to belong to the same block.
 
 The number of MADs used to define the outlier thresholds is defined by `nummads`.
@@ -73,22 +71,18 @@ function suggestadtqcfilters(detected::Vector{Int32}, subsettotals::Dict{String,
     survivors = Vector{UInt8}(undef, ncells)
     thresholds = suggest_adt_qc_filters(detected, props, use_block, block_ids, survivors, mindetectedrop, nummads)
 
-    prop = Dict{String, Vector{Float64}}()
+    prop = Dict{String, Any}()
     for i in eachindex(subnames)
-        prop[subnames[i]] = thresholds_totals(thresholds, i - 1)
+        prop[subnames[i]] = transform_blocked_thresholds(thresholds_totals(thresholds, i - 1), use_block, block_levels)
     end
 
     output = Dict{String, Any}(
         "thresholds" => Dict{String, Any}(
-            "detected" => copy(thresholds_detected(thresholds)),
+            "detected" => transform_blocked_thresholds(thresholds_detected(thresholds), use_block, block_levels),
             "subsettotals" => prop
         ),
         "filter" => Vector{Bool}(survivors)
     )
-
-    if use_block
-        output["block_levels"] = block_levels
-    end
 
     return output
 end

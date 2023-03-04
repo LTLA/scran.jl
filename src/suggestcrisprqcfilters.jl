@@ -16,15 +16,14 @@ All vectors should have length equal to the number of cells.
 This function then returns a dictionary containing the following keys:
 
 - `thresholds`: a dictionary containing:
-  - `maxcount`: a vector of doubles of length equal to the number of blocks, containing the filtering threshold applied to the maximum count (i.e., the product of `sums` and `maxproportions`).
+  - `maxcount`: the filtering threshold applied to the maximum count (i.e., the product of `sums` and `maxproportions`).
 - `filter`: a vector of booleans where a truthy value indicates that the corresponding cell failed to pass at least one of the thresholds.
   Such cells are deemed to be of low-quality and should be discarded.
-- `block_levels`: a vector of block levels, to assist interpretation of the `thresholds`.
-  Only generated if `block` is supplied.
 
 `block` should be a vector of length equal to the number of columns of `x`.
 This should specify the block assignment for each cell.
 Filtering thresholds are computed within each block, which avoids inflated MADs when there are large block-to-block differences.
+If `block` is provided, all thresholds are instead dictionaries where each key is the block name and each value is the filtering threshold in that block.
 If not provided, all cells are assumed to belong to the same block.
 
 The number of MADs used to define the outlier thresholds is defined by `nummads`.
@@ -59,14 +58,10 @@ function suggestcrisprqcfilters(sums::Vector{Float64}, maxproportion::Vector{Flo
 
     output = Dict{String, Any}(
         "thresholds" => Dict{String, Any}(
-            "maxcount" => copy(thresholds_max_count(thresholds))
+            "maxcount" => transform_blocked_thresholds(thresholds_max_count(thresholds), use_block, block_levels)
         ),
         "filter" => Vector{Bool}(survivors)
     )
-
-    if use_block
-        output["block_levels"] = block_levels
-    end
 
     return output
 end
