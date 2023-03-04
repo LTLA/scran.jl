@@ -1,5 +1,3 @@
-include("utils.jl")
-
 """
     lognormcounts(x::ScranMatrix; 
         sizefactors = nothing, 
