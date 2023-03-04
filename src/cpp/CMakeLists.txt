@@ -23,7 +23,9 @@ add_library(scrancxx SHARED
     src/suggest_adt_qc_filters.cpp
     src/per_cell_crispr_qc_metrics.cpp
     src/suggest_crispr_qc_filters.cpp
-    src/filter_cells.cpp)
+    src/filter_cells.cpp
+    src/model_gene_var.cpp
+)
 
 add_subdirectory(extern)
 

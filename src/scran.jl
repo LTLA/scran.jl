@@ -37,4 +37,7 @@ export suggestcrisprqcfilters
 include("filtercells.jl")
 export filtercells
 
+include("modelgenevar.jl")
+export modelgenevar
+
 end

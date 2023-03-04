@@ -10,6 +10,7 @@
 #include "per_cell_crispr_qc_metrics.hpp"
 #include "suggest_crispr_qc_filters.hpp"
 #include "filter_cells.hpp"
+#include "model_gene_var.hpp"
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -29,6 +30,12 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     mod.add_type<SuggestCrisprQcFiltersResults>("SuggestCrisprQcFiltersResults")
        .method("thresholds_max_count", &SuggestCrisprQcFiltersResults::thresholds_max_count);
+
+    mod.add_type<ModelGeneVarResults>("ModelGeneVarResults")
+        .method("means", &ModelGeneVarResults::means)
+        .method("variances", &ModelGeneVarResults::variances)
+        .method("residuals", &ModelGeneVarResults::residuals)
+        .method("fitted", &ModelGeneVarResults::fitted);
 
     // initialize_from_memory.hpp
     mod.method("initialize_from_memory_int32_int32", &initialize_from_memory_int32_int32);
@@ -64,4 +71,7 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     // filter_cells.hpp
     mod.method("filter_cells", &filter_cells);
+
+    // model_gene_var.hpp
+    mod.method("model_gene_var", &model_gene_var);
 }
