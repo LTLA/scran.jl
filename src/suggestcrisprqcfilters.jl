@@ -61,7 +61,7 @@ function suggestcrisprqcfilters(sums::Vector{Float64}, maxproportion::Vector{Flo
         "thresholds" => Dict{String, Any}(
             "maxcount" => copy(thresholds_max_count(thresholds))
         ),
-        "filter" => Bool.(survivors)
+        "filter" => Vector{Bool}(survivors)
     )
 
     if use_block

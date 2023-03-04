@@ -83,7 +83,7 @@ function suggestadtqcfilters(detected::Vector{Int32}, subsettotals::Dict{String,
             "detected" => copy(thresholds_detected(thresholds)),
             "subsettotals" => prop
         ),
-        "filter" => Bool.(survivors)
+        "filter" => Vector{Bool}(survivors)
     )
 
     if use_block
