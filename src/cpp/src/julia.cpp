@@ -9,6 +9,7 @@
 #include "suggest_adt_qc_filters.hpp"
 #include "per_cell_crispr_qc_metrics.hpp"
 #include "suggest_crispr_qc_filters.hpp"
+#include "filter_cells.hpp"
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -60,4 +61,7 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     // suggest_crispr_qc_filters.hpp
     mod.method("suggest_crispr_qc_filters", &suggest_crispr_qc_filters);
+
+    // filter_cells.hpp
+    mod.method("filter_cells", &filter_cells);
 }

@@ -10,4 +10,5 @@ include("percelladtqcmetrics.jl")
 include("suggestadtqcfilters.jl")
 include("percellcrisprqcmetrics.jl")
 include("suggestcrisprqcfilters.jl")
+include("filtercells.jl")
 end

@@ -34,4 +34,7 @@ export percellcrisprqcmetrics
 include("suggestcrisprqcfilters.jl")
 export suggestcrisprqcfilters
 
+include("filtercells.jl")
+export filtercells
+
 end
