@@ -12,4 +12,5 @@ include("percellcrisprqcmetrics.jl")
 include("suggestcrisprqcfilters.jl")
 include("filtercells.jl")
 include("modelgenevar.jl")
+include("runpca.jl")
 end

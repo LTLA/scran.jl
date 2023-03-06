@@ -40,4 +40,7 @@ export filtercells
 include("modelgenevar.jl")
 export modelgenevar
 
+include("runpca.jl")
+export runpca
+
 end

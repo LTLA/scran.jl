@@ -11,6 +11,7 @@
 #include "suggest_crispr_qc_filters.hpp"
 #include "filter_cells.hpp"
 #include "model_gene_var.hpp"
+#include "run_pca.cpp"
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -74,4 +75,16 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     // model_gene_var.hpp
     mod.method("model_gene_var", &model_gene_var);
+
+    // run_pca.hpp
+    mod.add_type<RunPcaResults>("RunPcaResults")
+        .method("num_dims", &RunPcaResults::num_dims)
+        .method("num_obs", &RunPcaResults::num_obs)
+        .method("num_genes", &RunPcaResults::num_genes)
+        .method("principal_components", &RunPcaResults::principal_components)
+        .method("rotation", &RunPcaResults::rotation)
+        .method("variance_explained", &RunPcaResults::variance_explained)
+        .method("total_variance", &RunPcaResults::total_variance);
+
+    mod.method("run_pca", &run_pca);
 }
