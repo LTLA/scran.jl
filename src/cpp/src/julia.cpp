@@ -12,6 +12,7 @@
 #include "filter_cells.hpp"
 #include "model_gene_var.hpp"
 #include "run_pca.cpp"
+#include "run_blocked_pca.cpp"
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -87,4 +88,16 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
         .method("total_variance", &RunPcaResults::total_variance);
 
     mod.method("run_pca", &run_pca);
+
+    // run_blocked_pca.hpp
+    mod.add_type<BlockedPcaResults>("BlockedPcaResults")
+        .method("num_dims", &BlockedPcaResults::num_dims)
+        .method("num_obs", &BlockedPcaResults::num_obs)
+        .method("num_genes", &BlockedPcaResults::num_genes)
+        .method("principal_components", &BlockedPcaResults::principal_components)
+        .method("rotation", &BlockedPcaResults::rotation)
+        .method("variance_explained", &BlockedPcaResults::variance_explained)
+        .method("total_variance", &BlockedPcaResults::total_variance);
+
+    mod.method("run_blocked_pca", &run_blocked_pca);
 }

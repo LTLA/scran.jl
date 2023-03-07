@@ -3,6 +3,7 @@
         x::ScranMatrix; 
         components = 50, 
         subset = nothing, 
+        block = nothing,
         scale = false, 
         numthreads = 1, 
         rotation = false
@@ -26,7 +27,11 @@ or a vector of integers containing the row indices of the features of interest i
 (In the latter case, it is recommended that the vector be strictly increasing for easier matching to rows of the `rotation` matrix.)
 If `nothing`, all features are used.
 
+If `block` is supplied and `blockmethod = "block"`, a PCA is performed after regressing out the blocking factor from each row of `x`.
+This effectively performs the pCA on the residuals, which eliminates any linear block-to-block differences. 
+
 If `scale = true`, genes are scaled to unit variance prior to PCA.
+If `block` is supplied and `blockmethod = "block"`, this scaling is done on the variance of the residuals.
 
 Users can set `numthreads` to enable parallelization.
 
@@ -45,14 +50,21 @@ julia> norm = scran.lognormcounts(mat)
 julia> runpca(norm)
 ```
 """
-function runpca(x::ScranMatrix; components = 50, subset = nothing, scale = false, numthreads = 1, rotation = false)
+function runpca(x::ScranMatrix; components = 50, subset = nothing, block = nothing, blockmethod = "block", scale = false, numthreads = 1, rotation = false)
     use_subset = !isnothing(subset)
     feats = Vector{UInt8}()
     if use_subset
         feats = cast_to_logical(subset, size(x, 1))
     end
 
-    res = run_pca(x, components, use_subset, feats, scale, numthreads)
+    if isnothing(block)
+        res = run_pca(x, components, use_subset, feats, scale, numthreads)
+    else
+        use_block, block_ids, _ = transform_factor(block, size(x, 2), "length of 'block' vector should be equal to number of columns in 'x'")
+        if blockmethod == "block"
+            res = run_blocked_pca(x, components, use_subset, feats, block_ids, scale, numthreads) 
+        end
+    end
 
     pcs = Array{Float64}(undef, num_dims(res), num_obs(res))
     pcs[:,:] = principal_components(res)
