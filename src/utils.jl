@@ -1,7 +1,5 @@
 function transform_factor(f::Nothing, n::Integer, msg::String)
-    if isnothing(f)
-        return false, Vector{Int32}(), Vector{String}()
-    end
+    return false, Vector{Int32}(), Vector{String}()
 end
 
 function transform_factor(f::Vector{T}, n::Integer, msg::String) where T
@@ -14,7 +12,7 @@ function transform_factor(f::Vector{T}, n::Integer, msg::String) where T
 
     # Short cut if it's already properly formatted.
     if T == Int32 && length(keys) && keys[1] == 0 && keys[length(keys)] == length(keys) - 1
-        return f
+        return true, f, keys
     end
 
     levels = Dict{T, Int32}()
