@@ -13,6 +13,19 @@
 #include "model_gene_var.hpp"
 #include "run_pca.cpp"
 #include "run_blocked_pca.cpp"
+#include "run_multibatch_pca.cpp"
+
+template<class Results>
+void register_pca_results_class(jlcxx::Module& mod, const std::string& name) {
+    mod.add_type<Results>(name)
+        .method("num_dims", &Results::num_dims)
+        .method("num_obs", &Results::num_obs)
+        .method("num_genes", &Results::num_genes)
+        .method("principal_components", &Results::principal_components)
+        .method("rotation", &Results::rotation)
+        .method("variance_explained", &Results::variance_explained)
+        .method("total_variance", &Results::total_variance);
+}
 
 JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.add_type<ScranMatrix>("ScranMatrix")
@@ -78,26 +91,17 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
     mod.method("model_gene_var", &model_gene_var);
 
     // run_pca.hpp
-    mod.add_type<RunPcaResults>("RunPcaResults")
-        .method("num_dims", &RunPcaResults::num_dims)
-        .method("num_obs", &RunPcaResults::num_obs)
-        .method("num_genes", &RunPcaResults::num_genes)
-        .method("principal_components", &RunPcaResults::principal_components)
-        .method("rotation", &RunPcaResults::rotation)
-        .method("variance_explained", &RunPcaResults::variance_explained)
-        .method("total_variance", &RunPcaResults::total_variance);
+    register_pca_results_class<RunPcaResults>(mod, "RunPcaResults");
 
     mod.method("run_pca", &run_pca);
 
     // run_blocked_pca.hpp
-    mod.add_type<BlockedPcaResults>("BlockedPcaResults")
-        .method("num_dims", &BlockedPcaResults::num_dims)
-        .method("num_obs", &BlockedPcaResults::num_obs)
-        .method("num_genes", &BlockedPcaResults::num_genes)
-        .method("principal_components", &BlockedPcaResults::principal_components)
-        .method("rotation", &BlockedPcaResults::rotation)
-        .method("variance_explained", &BlockedPcaResults::variance_explained)
-        .method("total_variance", &BlockedPcaResults::total_variance);
+    register_pca_results_class<BlockedPcaResults>(mod, "BlockedPcaResults");
 
     mod.method("run_blocked_pca", &run_blocked_pca);
+
+    // run_multibatch_pca.hpp
+    register_pca_results_class<MultiBatchPcaResults>(mod, "MultiBatchPcaResults");
+
+    mod.method("run_multibatch_pca", &run_multibatch_pca);
 }

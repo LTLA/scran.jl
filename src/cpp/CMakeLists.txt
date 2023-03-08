@@ -27,6 +27,7 @@ add_library(scrancxx SHARED
     src/model_gene_var.cpp
     src/run_pca.cpp
     src/run_blocked_pca.cpp
+    src/run_multibatch_pca.cpp
 )
 
 add_subdirectory(extern)
