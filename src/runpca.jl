@@ -28,10 +28,13 @@ or a vector of integers containing the row indices of the features of interest i
 If `nothing`, all features are used.
 
 If `block` is supplied and `blockmethod = "block"`, a PCA is performed after regressing out the blocking factor from each row of `x`.
-This effectively performs the pCA on the residuals, which eliminates any linear block-to-block differences. 
+This effectively performs the PCA on the residuals, which eliminates any linear block-to-block differences. 
+If `blockmethod = "weight"`, a PCA is performed whereby each block is weighted by its number of observations.
+This ensures that each block contributes the same effective number of observations to the calculation of the rotation vectors.
 
 If `scale = true`, genes are scaled to unit variance prior to PCA.
 If `block` is supplied and `blockmethod = "block"`, this scaling is done on the variance of the residuals.
+If `block` is supplied and `blockmethod = "weight"`, this scaling is done on the weighted sum of squared differences from the grand mean across blocks.
 
 Users can set `numthreads` to enable parallelization.
 
@@ -63,6 +66,10 @@ function runpca(x::ScranMatrix; components = 50, subset = nothing, block = nothi
         use_block, block_ids, _ = transform_factor(block, size(x, 2), "length of 'block' vector should be equal to number of columns in 'x'")
         if blockmethod == "block"
             res = run_blocked_pca(x, components, use_subset, feats, block_ids, scale, numthreads) 
+        elseif bockmethod == "weight"
+            res = run_multibatch_pca(x, components, use_subset, feats, block_ids, scale, numthreads) 
+        else
+            throw(ErrorException("unknown blocking method '" + blockmethod + "'"))
         end
     end
 
