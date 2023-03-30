@@ -17,6 +17,7 @@ add_library(scrancxx SHARED
     src/julia.cpp
     src/initialize_from_memory.cpp
     src/log_norm_counts.cpp
+    src/grouped_size_factors.cpp
     src/per_cell_rna_qc_metrics.cpp
     src/suggest_rna_qc_filters.cpp
     src/per_cell_adt_qc_metrics.cpp

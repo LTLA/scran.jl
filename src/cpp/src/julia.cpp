@@ -3,6 +3,7 @@
 #define JL_BINDINGS_ONLY
 #include "initialize_from_memory.hpp"
 #include "log_norm_counts.hpp"
+#include "grouped_size_factors.hpp"
 #include "per_cell_rna_qc_metrics.hpp"
 #include "suggest_rna_qc_filters.hpp"
 #include "per_cell_adt_qc_metrics.hpp"
@@ -65,6 +66,9 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& mod) {
 
     // log_norm_counts.hpp
     mod.method("log_norm_counts", &log_norm_counts);
+
+    // grouped_size_factors.hpp
+    mod.method("grouped_size_factors", &grouped_size_factors);
 
     // per_cell_rna_qc_metrics.hpp
     mod.method("per_cell_rna_qc_metrics", &per_cell_rna_qc_metrics);

@@ -16,6 +16,9 @@ export initializesparsematrix, size, extractrow, extractcolumn
 include("lognormcounts.jl")
 export lognormcounts
 
+include("groupedsizefactors.jl")
+export groupedsizefactors
+
 include("percellrnaqcmetrics.jl")
 export percellrnaqcmetrics
 
